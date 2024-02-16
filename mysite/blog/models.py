@@ -3,6 +3,14 @@ from django.db import models
 from django.contrib.auth.models import User
 
 # Create your models here.
+
+class PublishedManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(status=Post.Status.PUBLISHED) #aqui se llama a la clase padre para obtener todos los datos de bd y despues filtramos 
+
+
+
+
 #Creamos el modelo que nos permitira almacenar blogs en la base de datos
 class Post(models.Model):
     """
@@ -23,9 +31,8 @@ class Post(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=2, choices=Status.choices, default=Status.DRAFT)
-
-    
-
+    objects = models.Manager() # administrador predeterminado que te permite realizar consultas estándar en todos los objetos de la clase Post.
+    published = PublishedManager() # Te dará acceso al administrador personalizado published
 
     class Meta:
         ordering = ['-publish'] #Esto hara que se ordene de acuerdo al campo publish, el cual es l;a fecha, y lo hara de manera descendente
