@@ -23,6 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-3+_c73qv+tce4+i2vf0(yl^i+d%t%hj6vt&7ks+79-8t_%%#*@'
 
 # SECURITY WARNING: don't run with debug turned on in production!
+#Cierto, hay que pasarla a false cuandop s e suba
 DEBUG = True
 
 ALLOWED_HOSTS = []

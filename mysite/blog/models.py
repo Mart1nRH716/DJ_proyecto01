@@ -1,6 +1,7 @@
 from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import User
+from django.urls import reverse
 
 # Create your models here.
 
@@ -24,7 +25,8 @@ class Post(models.Model):
         PUBLISHED = 'PB', 'Published'
 
     title = models.CharField(max_length=250)
-    slug = models.SlugField(max_length=250) #Este es como un varchar de hecho se traduce en asi en la base de datos
+    slug = models.SlugField(max_length=250,unique_for_date='publish') #Este es como un varchar de hecho se traduce en asi en la base de datos
+    #El atributyo de unique for date  garantiza que el slug sea único para cada fecha de publicación. Esto significa que dos publicaciones con la misma fecha de publicación no pueden tener el mismo slug
     author = models.ForeignKey(User, on_delete=models.CASCADE,related_name='blog_posts') #Esta VA SER LA relacion muchos a uno e iportamos la clase user ya definida por django
     body = models.TextField()
     publish = models.DateTimeField(default=timezone.now)
@@ -42,5 +44,10 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
+    
+    def get_absolute_url(self):
+        #   La funcion reverse construiye la url de manera dinamica, lo que esto hace es esto: <a href="{% url 'blog:post_detail' post.id %}">, \
+        #ahora ya nadamas se llama a la funcion
+        return reverse('blog:post_detail',args=[self.publish.year, self.publish.month, self.publish.day, self.slug])
     
 #Una vez termninado se jhacen las migraciones
