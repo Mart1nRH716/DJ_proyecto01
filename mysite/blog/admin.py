@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Post
+from .models import Post, Comment
 
 # Register your models here.
 
@@ -13,3 +13,9 @@ class PostAdmin(admin.ModelAdmin):
     raw_id_fields = ['author'] #Esta propiedad cambia la forma en que se representan los campos relacionados en el panel de administración, es decir, se ve el id del autor ahora
     date_hierarchy = 'publish' # Esta propiedad especifica que se debe agregar una jerarquía de fechas en la barra lateral del panel de administración
     ordering = ['status', 'publish'] # define el orden en el que se mostrarán los elementos en el panel de administración
+    
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ['name', 'email', 'post', 'created', 'active']
+    list_filter = ['active', 'created', 'updated']
+    search_fields = ['name', 'email', 'body']

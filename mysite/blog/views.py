@@ -4,6 +4,7 @@ from django.http import Http404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic import ListView
 from .forms import EmailPostForm #Asi se importan las cosas
+from django.core.mail import send_mail
 # Create your views here.
 
 class PostListView(ListView):
@@ -38,7 +39,7 @@ def post_detail(request, year, month, day, post):
 def post_share(request, post_id):
     # Obtener el objeto Post con el id dado, o devolver un error 404 si no existe
     post = get_object_or_404(Post, id=post_id, status=Post.Status.PUBLISHED)
-    
+    sent = False
     # Verificar si la solicitud es de tipo POST
     if request.method == 'POST':
         # Si es una solicitud POST, inicializar el formulario con los datos de la solicitud
@@ -47,11 +48,16 @@ def post_share(request, post_id):
         # Verificar si el formulario es válido
         if form.is_valid():
             # Si el formulario es válido, obtener los datos limpios del formulario
-            cd = form.cleaned_data #guardamos los datos 
+            cd = form.cleaned_data #guardamos los datos
+            post_url = request.build_absolute_uri(post.get_absolute_url()) #ASiganr una ruta  a mi base de datos. https://mysite//blog/1 es lo que hace esto
+            subject = f"{cd['name']} recommends you read {post.title}"
+            message = f"Read {post.title} at {post_url}\n\n {cd['name']}\'s comments: {cd['comments']}"
+            send_mail(subject, message, 'martinoli736384@gmail.com', [cd['to']])
+            sent = True
     else:
         # Si la solicitud no es de tipo POST, mandamos el formulario vacio
         form = EmailPostForm() 
     # Renderizar la plantilla 'blog/post/share.html' con el objeto Post y el formulario
-    return render(request, 'blog/post/share.html', {'post': post, 'form': form})
+    return render(request, 'blog/post/share.html', {'post': post, 'form': form, 'sent': sent})
 
  
